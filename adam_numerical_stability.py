@@ -14,101 +14,72 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+ls = ['-', '--', '-.', ':', ',']
 
 ##% Cr = [0.05 0.1 0.5 1.0 1.5]; 
 Cr = np.linspace(0.001, 1.5, 5); 
-theta = np.linspace(0, 2*pi, 50);
+theta = np.linspace(0, 2*np.pi, 50);
 F = 3.5; 
 s = 0.7;
 dx = 0.0025/np.sqrt(F);
 dtn = Cr*dx;
 R   = 1000;
-a = b = c = r1 = rr1 zeros((len(Cr),len(theta)))
+a = b = c = r1 = rr1 = np.zeros((len(Cr),len(theta)))
 
 for n, dt in enumerate( dtn ):
-    a[n] = 1j*dt*sin(theta)./(12*dx);
-    b[n] = dt/(12) * ( 1j*sin(theta)/dx + 2/(s) +  (4*sin(theta/2)**2)/(R * dx**2 ) );
-    c[n] = dt/(12) * ( 1j*sin(theta)./(dx * F) -  1/(s) );
-end
+    a[n] = 1j*dt*np.sin(theta)/(12*dx);
+    b[n] = dt/(12) * ( 1j*np.sin(theta)/dx + 2/(s) +  (4*np.sin(theta/2)**2)/(R * dx**2 ) );
+    c[n] = dt/(12) * ( 1j*np.sin(theta)/(dx * F) -  1/(s) );
 
-sep = round(length(Cr)/5);
 
 p = 1; q = 1;
-for n in len( dtn ):
+for n in range(len( dtn )):
 ##    %%% Pred
-    for j in len(theta):
+    for j in range(len(theta)):
         x6 = 1;
-        x5 = 23*a[n][j] + 23*b(n,j) - 2;
+        x5 = 23*a[n][j] + 23*b[n][j] - 2;
         x4 = 529*a[n][j]*b[n][j] - 529*a[n][j]*c[n][j] - 39*a[n][j] - 39*b[n][j] + 1;
         x3 = -736*a[n][j]*b[n][j] + 736*a[n][j]*c[n][j] + 21*a[n][j] + 21*b[n][j];
         x2 = 486*a[n][j]*b[n][j] - 486*a[n][j]*c[n][j] - 5*a[n][j] - 5*b[n][j];
         x1 = -160*a[n][j]*b[n][j] + 160*a[n][j]*c[n][j];
         x0 = 25*a[n][j]*b[n][j] - 25*a[n][j]*c[n][j];
         p1 = [x6, x5, x4, x3, x2, x1, x0];
-        r1[n][j] = max(abs(roots(p1)));  
+        r1[n][j] = max(abs(np.roots(p1)));  
     
 
 ##    %%% Corr
-    for j in len(theta):
-        x6 = 1 + 25*a[n][j]*b[n][j] - 25*a(n,j)*c(n,j) + 5*a(n,j) + 5*b(n,j);
-        x5 = 80*a(n,j)*b(n,j) - 80*a(n,j)*c(n,j) + 3*a(n,j) + 3*b(n,j) - 2;
-        x4 = 4*a(n,j)*b(n,j) - 4*a(n,j)*c(n,j) - 14*a(n,j) - 14*b(n,j) + 1;
-        x3 = -96*a(n,j)*b(n,j) + 96*a(n,j)*c(n,j) + 6*a(n,j) + 6*b(n,j);
-        x2 = 36*a(n,j)*b(n,j) - 36*a(n,j)*c(n,j);
+    for j in range(len(theta)):
+        x6 = 1 + 25*a[n][j]*b[n][j] - 25*a[n][j]*c[n][j] + 5*a[n][j] + 5*b[n][j];
+        x5 = 80*a[n][j]*b[n][j] - 80*a[n][j]*c[n][j] + 3*a[n][j] + 3*b[n][j] - 2;
+        x4 = 4*a[n][j]*b[n][j] - 4*a[n][j]*c[n][j] - 14*a[n][j] - 14*b[n][j] + 1;
+        x3 = -96*a[n][j]*b[n][j] + 96*a[n][j]*c[n][j] + 6*a[n][j] + 6*b[n][j];
+        x2 = 36*a[n][j]*b[n][j] - 36*a[n][j]*c[n][j];
         x1 = 0;
         x0 = 0;
-        p2 = [x6 x5 x4 x3 x2 x1 x0];
-        rr1(n,j) = max(abs(roots(p2)));  
+        p2 = [x6, x5, x4, x3, x2, x1, x0];
+        rr1[n][j] = max(abs(np.roots(p2)));  
     
     
-    
-[r1_max(n) r1_loc(n)] = max(r1(n,:));
-if r1_max(n) <= 1.0001
-    q = q+1;
-end
+     
+f = plt.figure(1)
+plt.rc('text', usetex = True)
+plt.rc('font', family = 'serif')
+leg = []
+for n in range(len(dtn)):
+    plt.plot(theta, r1[n], ls[n]);
+    leg.append('Cr = ' + str( round(Cr[n],4) )
+plt.axis([0, max(theta), 0.7, 3.6])
+plt.ylabel(r'$|\lambda_{max}|$', rotation = 0)
+plt.xlabel(r'$\theta$')
+plt.legend(leg)
+plt.show(block=False)
 
-[rr1_max(n) rr1_loc(n)] = max(rr1(n,:));
-if rr1_max(n) <= 1.0001
-    p = p+1;
-end
+f = plt.figure(2)
+for n in range(len(dtn)):
+    plt.plot(theta, rr1[n], ls[n]);
+plt.axis([0, max(theta), 0.7, 3.6])
+plt.ylabel(r'$|\lambda_{max}|$', rotation = 0)
+plt.xlabel(r'$\theta$')
+plt.legend(leg)
+plt.show(block=False)
 
-end
-
-
-
-
-w = 1 : sep : length(Cr);
-
-T       = length(theta);
-step    = 5;
-figure(1)
-    plot(theta(1 : 2*step : T), r1(w(1), 1 : 2*step : T),'o');
-    hold on
-    plot(theta(1 : 4*step : T), r1(q-1, 1 : 4*step : T),'*b');
-    plot(theta(1 : step : T), r1(w(3), 1 : step : T), 'k');
-    plot(theta(1 : step : T), r1(p, 1 : step : T), '--', 'linewidth',2);
-    plot(theta(1 : step : T), r1(w(5), 1 : step : T), '-+', 'linewidth',2);
-    ylabel('|\lambda_{max}|')
-    xlabel('\theta')
-    title('Norma amplifikasi maksimum untuk skema prediktor')
-   legend(['Cr =' num2str(Cr(w(1)))],['Cr = ' num2str(Cr(q-1))],['Cr = ' num2str(Cr(w(3)))], ['Cr = ' num2str(Cr(p))], ['Cr = ' num2str(Cr(w(5)))])
-hold off
-axis([0 max(theta) 0.7 3.6])
-
-
- 
-
-figure(2)
-    polar(theta(1 : 2*step : T), rr1(w(1), 1 : 2*step : T),'o');
-    hold on
-    polar(theta(1 : 4*step : T), rr1(q-1, 1 : 4*step : T),'*b');
-    polar(theta(1 : step : T), rr1(w(3), 1 : step : T), 'k');
-    polar(theta(1 : step : T), rr1(p, 1 : step : T), '--');
-    polar(theta(1 : step : T), rr1(w(5), 1 : step : T), '-o');
-%     ylabel('|\lambda_{max}|')
-%     xlabel('\theta')
-    title('Norma amplifikasi maksimum untuk skema korektor')
-%     legend(['Cr =' num2str(Cr(w(1)))],['Cr = ' num2str(Cr(q))],['Cr = ' num2str(Cr(w(3)))], ['Cr = ' num2str(Cr(p))], ['Cr = ' num2str(Cr(w(5)))])
-    hold off
-%     rlim('auto')
-axis([0 max(theta) 0.85 1.25])
