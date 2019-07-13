@@ -17,69 +17,68 @@ import matplotlib.pyplot as plt
 ls = ['-', '--', '-.', ':', ',']
 
 ##% Cr = [0.05 0.1 0.5 1.0 1.5]; 
-Cr = np.linspace(0.001, 1.5, 5); 
+Cr = np.linspace(0.01, 1.25, 4); 
 theta = np.linspace(0, 2*np.pi, 50);
-F = 3.5; 
+F = 2.5; 
 s = 0.7;
-dx = 0.0025/np.sqrt(F);
+dx = 0.001/np.sqrt(F);
 dtn = Cr*dx;
 R   = 1000;
-a = b = c = r1 = rr1 = np.zeros((len(Cr),len(theta)))
+zero = np.zeros((len(Cr),len(theta)))
+
+r1 = rr1 = zero
+
 
 for n, dt in enumerate( dtn ):
-    a[n] = 1j*dt*np.sin(theta)/(12*dx);
-    b[n] = dt/(12) * ( 1j*np.sin(theta)/dx + 2/(s) +  (4*np.sin(theta/2)**2)/(R * dx**2 ) );
-    c[n] = dt/(12) * ( 1j*np.sin(theta)/(dx * F) -  1/(s) );
+    a = 1j*dt*np.sin(theta)/(12*dx);
+    b = dt/(12) * ( 1j*np.sin(theta)/(F*dx) - 1/(s)  );
+    c = dt/(12) * ( 1j*np.sin(theta)/(dx) +  2/(s) +  (4*np.sin(theta/2)**2)/(R * dx**2 ) );
 
-
-p = 1; q = 1;
-for n in range(len( dtn )):
 ##    %%% Pred
     for j in range(len(theta)):
         x6 = 1;
-        x5 = 23*a[n][j] + 23*b[n][j] - 2;
-        x4 = 529*a[n][j]*b[n][j] - 529*a[n][j]*c[n][j] - 39*a[n][j] - 39*b[n][j] + 1;
-        x3 = -736*a[n][j]*b[n][j] + 736*a[n][j]*c[n][j] + 21*a[n][j] + 21*b[n][j];
-        x2 = 486*a[n][j]*b[n][j] - 486*a[n][j]*c[n][j] - 5*a[n][j] - 5*b[n][j];
-        x1 = -160*a[n][j]*b[n][j] + 160*a[n][j]*c[n][j];
-        x0 = 25*a[n][j]*b[n][j] - 25*a[n][j]*c[n][j];
+        x5 = 23*a[j] + 23*c[j] - 2;
+        x4 = -529*a[j]*b[j] + 529*a[j]*c[j] - 39*a[j] - 39*c[j] + 1;
+        x3 = 736*a[j]*b[j] - 736*a[j]*c[j] + 21*a[j] + 21*c[j];
+        x2 = -486*a[j]*b[j] + 486*a[j]*c[j] - 5*a[j] - 5*c[j];
+        x1 = 160*a[j]*b[j] - 160*a[j]*c[j];
+        x0 = -25*a[j]*b[j] + 25*a[j]*c[j];
         p1 = [x6, x5, x4, x3, x2, x1, x0];
         r1[n][j] = max(abs(np.roots(p1)));  
     
 
 ##    %%% Corr
     for j in range(len(theta)):
-        x6 = 1 + 25*a[n][j]*b[n][j] - 25*a[n][j]*c[n][j] + 5*a[n][j] + 5*b[n][j];
-        x5 = 80*a[n][j]*b[n][j] - 80*a[n][j]*c[n][j] + 3*a[n][j] + 3*b[n][j] - 2;
-        x4 = 4*a[n][j]*b[n][j] - 4*a[n][j]*c[n][j] - 14*a[n][j] - 14*b[n][j] + 1;
-        x3 = -96*a[n][j]*b[n][j] + 96*a[n][j]*c[n][j] + 6*a[n][j] + 6*b[n][j];
-        x2 = 36*a[n][j]*b[n][j] - 36*a[n][j]*c[n][j];
+        x6 = 1 - 25*a[j]*b[j] + 25*a[j]*c[j] + 5*a[j] + 5*c[j];
+        x5 = -80*a[j]*b[j] + 80*a[j]*c[j] + 3*a[j] + 3*c[j] - 2;
+        x4 = -54*a[j]*b[j] + 54*a[j]*c[j] - 9*a[j] - 9*c[j] + 1;
+        x3 = 16*a[j]*b[j] - 16*a[j]*c[j] + a[j] + c[j];
+        x2 = -a[j]*b[j] + a[j]*c[j];
         x1 = 0;
         x0 = 0;
         p2 = [x6, x5, x4, x3, x2, x1, x0];
         rr1[n][j] = max(abs(np.roots(p2)));  
     
     
-     
-f = plt.figure(1)
+##     
 plt.rc('text', usetex = True)
 plt.rc('font', family = 'serif')
 leg = []
 for n in range(len(dtn)):
     plt.plot(theta, r1[n], ls[n]);
-    leg.append('Cr = ' + str( round(Cr[n],4) )
-plt.axis([0, max(theta), 0.7, 3.6])
+    leg.append('Cr = ' + str( round(Cr[n],2) ))
+##plt.axis([0, max(theta), 0.7, 3.6])
 plt.ylabel(r'$|\lambda_{max}|$', rotation = 0)
 plt.xlabel(r'$\theta$')
-plt.legend(leg)
+plt.legend(leg, loc = 1)
 plt.show(block=False)
 
 f = plt.figure(2)
 for n in range(len(dtn)):
     plt.plot(theta, rr1[n], ls[n]);
-plt.axis([0, max(theta), 0.7, 3.6])
+#plt.axis([0, max(theta), 0.7, 3.6])
 plt.ylabel(r'$|\lambda_{max}|$', rotation = 0)
 plt.xlabel(r'$\theta$')
-plt.legend(leg)
+plt.legend(leg, loc = 1)
 plt.show(block=False)
 
