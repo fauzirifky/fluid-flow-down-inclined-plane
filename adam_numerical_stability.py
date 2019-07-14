@@ -17,14 +17,14 @@ import matplotlib.pyplot as plt
 ls = ['-', '--', '-.', ':', ',']
 
 ##% Cr = [0.05 0.1 0.5 1.0 1.5];
-Cr = np.linspace(0.01, 1.25, 4);
-theta = np.linspace(0, 2*np.pi, 50);
-F = 3.5;
-s = 0.7;
+Cr = np.linspace(0.01, 1.5, 4);
+theta = np.linspace(0, 2*np.pi, 100);
+F = 3;
+s = 0.5;
 dx = 0.01/np.sqrt(F);
 dtn = Cr*dx;
-R   = 1000;
-
+R   = 500;
+mu = 0.001
 
 r1 = np.zeros((len(Cr),len(theta)))
 rr1 = np.zeros((len(Cr),len(theta)))
@@ -32,7 +32,7 @@ rr1 = np.zeros((len(Cr),len(theta)))
 
 for n, dt in enumerate( dtn ):
     a = 1j*dt*np.sin(theta)/(12*dx);
-    b = dt/(12) * ( 1j*np.sin(theta)/(F*dx) - 1/(s)  );
+    b = dt/(12) * ( 1j*np.sin(theta)/(F*dx) - 1/(s) +  mu*(4*np.sin(theta/2)**2)/( dx**2 ) );
     c = dt/(12) * ( 1j*np.sin(theta)/(dx) +  2/(s) +  (4*np.sin(theta/2)**2)/(R * dx**2 ) );
 
 ##    %%% Pred
@@ -70,18 +70,18 @@ for n in range(len(dtn)):
     plt.plot(theta, r1[n], ls[n]);
     leg.append('Cr = ' + str( round(Cr[n],2) ))
 ##plt.axis([0, max(theta), 0.7, 3.6])
-plt.ylabel(r'$|\lambda_{max}|$', rotation = 0)
+plt.ylabel(r'$|\lambda_{max}|$')
 plt.xlabel(r'$\theta$')
 plt.legend(leg, loc = 2)
 plt.savefig('pred.eps')
-##plt.show()
+plt.show(block=False)
 
 f = plt.figure(2)
 for n in range(len(dtn)):
     plt.plot(theta, rr1[n], ls[n]);
 #plt.axis([0, max(theta), 0.7, 3.6])
-plt.ylabel(r'$|\lambda_{max}|$', rotation = 0)
+plt.ylabel(r'$|\lambda_{max}|$')
 plt.xlabel(r'$\theta$')
 plt.legend(leg, loc = 1)
 plt.savefig('corr.eps')
-##plt.show()
+plt.show(block=False)
