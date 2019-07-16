@@ -17,14 +17,14 @@ import matplotlib.pyplot as plt
 ls = ['-', '--', '-.', ':', ',']
 
 ##% Cr = [0.05 0.1 0.5 1.0 1.5];
-Cr = np.linspace(0.01, 1.5, 4);
+Cr = np.linspace(0.01, 0.25, 4);
 theta = np.linspace(0, 2*np.pi, 100);
-F = 3;
+F = 3.0;
 s = 0.5;
-dx = 0.01/np.sqrt(F);
+dx = 0.002; 0.008/np.sqrt(F);
 dtn = Cr*dx;
 R   = 500;
-mu = 0.001
+mu = 0.0005
 
 r1 = np.zeros((len(Cr),len(theta)))
 rr1 = np.zeros((len(Cr),len(theta)))

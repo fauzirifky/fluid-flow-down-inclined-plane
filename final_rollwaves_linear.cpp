@@ -19,7 +19,7 @@ float fun2(float a, float h0, float k, float co, float F) {
 int main() {
     // double L = 1, dx = 0.000833333333333, dt = 0.000083333;
     // double L = 1, dx = 0.000833333333333, dt = 0.00046667; // 0.56dx;
-    double L = 1, dx = 0.001, dt = dx*0.5;
+    double L = 1, dx = 0.002, dt = dx*0.4;
     // double L = 1, dx = 0.000833333333333, dt = dx*1.2;
     // double L = 1, dx = 0.000833333333333, dt = dx*0.78;
     int X = round(L/dx);
@@ -47,7 +47,7 @@ int main() {
     
     
     // Parameters
-    double k = 2 * M_PI, F = 2 , R = 1000, Cf = 0.006, g = 9.8, h0 = 0.0042, sigma = 0.7;
+    double k = 2 * M_PI, F = 3.0 , R = 500, Cf = 0.006, g = 9.8, h0 = 0.0042, sigma = 0.5;
     printf("Simulasi Roll Waves hingga T = %4.2f\n", T*dt);
     printf("k = %d pi, F = %f, R = %f, sigma = %f\n", int(k / M_PI), F, R, sigma);
     
@@ -57,7 +57,7 @@ int main() {
     si = g * sin(theta);
     u0 = sqrt( h0);
     nu = 0; u0 / (R * L);
-    mu = 0;0.001/5; //-0.075;//0.1 ;
+    mu = 0.0005;0.001/5; //-0.075;//0.1 ;
     
     /// initial condition
     x[0] = dt;
@@ -100,7 +100,7 @@ int main() {
         // Predictor Operator
         for (j = 1; j <= X - 2 ; j++){
             H3[j] = - (u[j + 1] - u[j - 1]) / (2 * dx) - (h[j + 1] - h[j - 1]) / (2 * dx);
-            U3[j] = - (u[j + 1] - u[j - 1]) / (2 * dx) - (1/F) * (h[j + 1] - h[j - 1]) / (2 * dx) + (h[j] - 2*u[j])/sigma + (1/R) * (u[j + 1] - 2 * u[j] + u[j - 1]) / (dx * dx) - mu * (h[j + 1] - 2 * h[j] + h[j - 1]) / (dx * dx);
+            U3[j] = - (u[j + 1] - u[j - 1]) / (2 * dx) - (1/F) * (h[j + 1] - h[j - 1]) / (2 * dx) + (h[j] - 2*u[j])/sigma + (1/R) * (u[j + 1] - 2 * u[j] + u[j - 1]) / (dx * dx) + mu * (h[j + 1] - 2 * h[j] + h[j - 1]) / (dx * dx);
         }
         
         // Periodic Boundary Condition
@@ -127,7 +127,7 @@ int main() {
         // Corrector Operator
         for (j = 1; j <= X - 2; j++) {
             HH[j] = - (uu[j + 1] - uu[j - 1]) / (2 * dx) - (hh[j + 1] - hh[j - 1]) / (2 * dx);
-            UU[j] = - (uu[j + 1] - uu[j - 1]) / (2 * dx) - (1/F) * (hh[j + 1] - hh[j - 1]) / (2 * dx) +  (hh[j] - 2*uu[j] ) / sigma + (1/R) * (uu[j + 1] - 2 * uu[j] + uu[j - 1]) / (dx * dx) - mu * (hh[j + 1] - 2 * hh[j] + hh[j - 1]) / (dx * dx);
+            UU[j] = - (uu[j + 1] - uu[j - 1]) / (2 * dx) - (1/F) * (hh[j + 1] - hh[j - 1]) / (2 * dx) +  (hh[j] - 2*uu[j] ) / sigma + (1/R) * (uu[j + 1] - 2 * uu[j] + uu[j - 1]) / (dx * dx) + mu * (hh[j + 1] - 2 * hh[j] + hh[j - 1]) / (dx * dx);
         }
         
         // Periodic Boundary Condition
